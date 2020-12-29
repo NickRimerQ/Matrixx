@@ -1,10 +1,16 @@
 #include "Header.h"
+#include "Matrixx.cpp"
 
 int main()
 {
-	Matrix a(3, 3);
-	a.filling();
-	a.print();
-	
+	Matrix<int> a;
+	cin >> a;
+	cout << "------------------------" << endl;
+	cout << a;
+	cout << "________________________" << endl;
+	//Vector<int> b(3);
+	//cin >> b;
+	//cout << "------------------------" << endl;
+	//cout << b;
 	return 0;
 }
