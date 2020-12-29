@@ -1,21 +1,29 @@
 #include "Header.h"
 
-
-Matrix::Matrix(int line_, int column_)
+template<class T>
+Matrix<T>::Matrix()
 {
-	line = line_;
-	column = column_;
+	arr = nullptr;
+	this->line = 0;
+	this->column = 0;
+}
 
-	arr = new long int* [line];
+template<class T>
+inline Matrix<T>::Matrix(int line, int column)
+{
+	this->line = line;
+	this->column = column;
+
+	arr = new T * [line];
 
 	for (int i = 0; i < line; i++)
 	{
-		arr[i] = new long int[column];
+		arr[i] = new T[column];
 	}
 }
 
-
-Matrix::~Matrix()
+template<class T>
+Matrix<T>::~Matrix()
 {
 	if (arr != nullptr)
 	{
@@ -23,140 +31,40 @@ Matrix::~Matrix()
 		{
 			delete[] arr[i];
 		}
+
 		delete[] arr;
 	}
 }
 
-
-Matrix::Matrix(const Matrix& other)
+template<class T>
+Matrix<T>::Matrix(const Matrix& temp)
 {
-	line = other.line;
-	column = other.column;
-	arr = new long int* [line];
+	this->line = temp.line;
+	this->column = temp.column;
+	this->arr = new T * [line];
 
 	for (int i = 0; i < line; i++)
 	{
-		arr[i] = new long int[column];
+		this->arr[i] = new T[column];
 	}
 
 	for (int i = 0; i < line; i++) {
 		for (int j = 0; j < column; j++) {
-			arr[i][j] = other.arr[i][j];
+			this->arr[i][j] = temp.arr[i][j];
 		}
 	}
 }
 
-
-Matrix& Matrix::operator = (const Matrix& other)
+template<class T>
+bool Matrix<T>::operator==(const Matrix& temp)
 {
-	for (int i = 0; i < line; i++)
-	{
-		delete[] arr[i];
-	}
-
-	delete[] arr;
-
-	line = other.line;
-	column = other.column;
-	arr = new long int* [line];
-
-	for (int i = 0; i < line; i++)
-	{
-		this->arr[i] = new long int[column];
-	}
-
-	for (int i = 0; i < line; i++) {
-		for (int j = 0; j < column; j++) {
-			this->arr[i][j] = other.arr[i][j];
-		}
-	}
-	return*this;
-	
-}
-
-Matrix Matrix::operator + (const Matrix& other)
-{
-	if (line == other.line && column == other.column)
-	{
-		Matrix temp(line, column);
-		for (int i = 0; i < line; i++)
-		{
-			for (int j = 0; j < column; j++)
-			{
-				temp.arr[i][j] = arr[i][j] + other.arr[i][j];
-			}
-		}
-		return temp;
-	}
-}
-
-Matrix Matrix::operator - (const Matrix& other)
-{
-	if (line == other.line && column == other.column)
-	{
-		Matrix temp(line, column);
-		for (int i = 0; i < line; i++)
-		{
-			for (int j = 0; j < column; j++)
-			{
-				temp.arr[i][j] = arr[i][j] - other.arr[i][j];
-			}
-		}
-		return temp;
-	}
-}
-
-Matrix Matrix::operator * (const Matrix& other)
-{
-
-	if (column == other.line)
-	{
-		Matrix temp(line, other.column);
-
-		for (int i = 0; i < line; i++)
-		{
-			for (int j = 0; j < other.column; j++)
-			{
-				temp.arr[i][j] = 0;
-			}
-		}
-
-		for (int j = 0; j < other.column; j++)
-		{
-			for (int l = 0; l < line; l++)
-			{
-				for (int k = 0; k < column; k++)
-				{
-					temp.arr[l][j] = temp.arr[l][j] + arr[l][k] * other.arr[k][j];
-				}
-			}
-		}
-		return temp;
-	}
-}
-
-Matrix Matrix::operator * (const int other)
-{
-	Matrix temp(*this);
-	for (int i = 0; i < line; i++)
-	{
-		for (int j = 0; j < column; j++)
-		{
-			temp.arr[i][j] = temp.arr[i][j] * other;
-		}
-	}
-	return temp;
-}
-
-bool Matrix::operator == (const Matrix& other)
-{
-	if (line == other.line && column == other.column)
+	if (line == temp.line && column == temp.column)
 	{
 		for (int i = 0; i < line; i++)
 		{
 			for (int j = 0; j < column; j++)
 			{
-				if (arr[i][j] != other.arr[i][j])
+				if (arr[i][j] != temp.arr[i][j])
 				{
 					return false;
 				}
@@ -170,32 +78,285 @@ bool Matrix::operator == (const Matrix& other)
 	}
 }
 
-bool Matrix::operator != (const Matrix& other)
+template<class T>
+Matrix<T> Matrix<T>::operator=(const Matrix& temp)
 {
-	return !(operator==(other));
-}
-
-
-
-
-void Matrix::filling()
-{
-	for (int i = 0; i < line; i++)
+	if (arr == nullptr)
 	{
-		for (int j = 0; j < column; j++)
+		this->line = temp.line;
+		this->column = temp.column;
+		this->arr = new T * [line];
+
+		for (int i = 0; i < line; i++)
 		{
-			arr[i][j] = i + j;
+			this->arr[i] = new T[column];
 		}
+
+		for (int i = 0; i < line; i++) {
+			for (int j = 0; j < column; j++) {
+				this->arr[i][j] = temp.arr[i][j];
+			}
+		}
+		return*this;
+	}
+	else
+	{
+		for (int i = 0; i < line; i++)
+		{
+			delete[] arr[i];
+		}
+
+		delete[] arr;
+
+		this->line = temp.line;
+		this->column = temp.column;
+		this->arr = new T * [line];
+
+		for (int i = 0; i < line; i++)
+		{
+			this->arr[i] = new T[column];
+		}
+
+		for (int i = 0; i < line; i++) {
+			for (int j = 0; j < column; j++) {
+				this->arr[i][j] = temp.arr[i][j];
+			}
+		}
+		return*this;
 	}
 }
 
-void Matrix::print()
+template<class T>
+Matrix<T> Matrix<T>::operator+(const Matrix& temp)
 {
-	for (int i = 0; i < line; i++) {
-		for (int j = 0; j < column; j++) {
-			cout << arr[i][j] << "\t";
+	if (line == temp.line && column == temp.column)
+	{
+		Matrix temp(line, column);
+		for (int i = 0; i < line; i++)
+		{
+			for (int j = 0; j < column; j++)
+			{
+				temp.arr[i][j] = this->arr[i][j] + temp.arr[i][j];
+			}
 		}
-		cout << endl;
+		return temp;
 	}
 }
+
+template<class T>
+Matrix<T> Matrix<T>::operator-(const Matrix& temp)
+{
+	if (line == temp.line && column == temp.column)
+	{
+		Matrix temp(line, column);
+		for (int i = 0; i < line; i++)
+		{
+			for (int j = 0; j < column; j++)
+			{
+				temp.arr[i][j] = this->arr[i][j] - temp.arr[i][j];
+			}
+		}
+		return temp;
+	}
+}
+
+template<class T>
+Matrix<T> Matrix<T>::operator*(const Matrix& temp)
+{
+	if (column == temp.line)
+	{
+		Matrix temp(line, temp.column);
+
+		for (int i = 0; i < line; i++)
+		{
+			for (int j = 0; j < temp.column; j++)
+			{
+				temp.arr[i][j] = 0;
+			}
+		}
+
+		for (int j = 0; j < temp.column; j++)
+		{
+			for (int l = 0; l < line; l++)
+			{
+				for (int k = 0; k < column; k++)
+				{
+					temp.arr[l][j] = temp.arr[l][j] + this->arr[l][k] * temp.arr[k][j];
+				}
+			}
+		}
+
+		return temp;
+	}
+}
+
+template<class T>
+inline Vector<T>::Vector(int size)
+{
+	Size = size;
+	vector = new T[Size];
+	for (int i = 0; i < Size; i++)
+	{
+		vector[i] = 0;
+	}
+}
+
+template<class T>
+Vector<T>::~Vector()
+{
+	delete[] vector;
+}
+
+template<class T>
+Vector<T>::Vector(const Vector& temp)
+{
+	Size = temp.Size;
+	vector = new T[Size];
+	for (int i = 0; i < Size; i++)
+	{
+		vector[i] = temp.vector[i];
+	}
+}
+
+template<class T>
+bool Vector<T>::operator==(const Vector& temp)
+{
+	if (Size = temp.Size)
+	{
+		for (int i = 0; i < Size; i++)
+		{
+			if (vector[i] != temp.vector[i])
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+template<class T>
+Vector<T> Vector<T>::operator=(const Vector& temp)
+{
+	if (this != &temp)
+	{
+		delete[] vector;
+		Size = temp.Size;
+		vector = new T[Size];
+		for (int i = 0; i < Size; i++)
+		{
+			vector[i] = temp.vector[i];
+		}
+	}
+	return *this;
+}
+
+template<class T>
+Vector<T> Vector<T>::operator+(const T& temp)
+{
+	Vector temp(Size);
+	for (int i = 0; i < Size; i++)
+	{
+		temp.vector[i] = temp = vector[i];
+	}
+	return temp;
+}
+
+template<class T>
+Vector<T> Vector<T>::operator-(const T& temp)
+{
+	Vector temp(Size);
+	for (int i = 0; i < Size; i++)
+	{
+		temp.vector[i] = vector[i] - temp;
+	}
+	return temp;
+}
+
+template<class T>
+Vector<T> Vector<T>::operator*(const T& temp)
+{
+	Vector temp(Size);
+	for (int i = 0; i < Size; i++)
+	{
+		temp.vector[i] = vector[i] * temp;
+	}
+	return temp;
+}
+
+template<class T>
+Vector<T> Vector<T>::operator+(const Vector& temp)
+{
+	if (Size == temp.Size)
+	{
+		Vector temp(Size);
+		for (int i = 0; i < Size; i++)
+		{
+			temp.vector[i] = vector[i] + temp.vector[i];
+		}
+		return temp;
+	}
+	else
+	{
+		cout << "size != temp.size" << endl;
+		return Vector();
+	}
+}
+
+template<class T>
+Vector<T> Vector<T>::operator-(const Vector& temp)
+{
+	if (Size == temp.Size)
+	{
+		Vector temp(Size);
+		for (int i = 0; i < Size; i++)
+		{
+			temp.vector[i] = vector[i] - temp.vector[i];
+		}
+		return temp;
+	}
+	else
+	{
+		cout << "size != temp.size" << endl;
+		return Vector();
+	}
+}
+
+template<class T>
+Vector<T> Vector<T>::operator*(const Vector& temp)
+{
+	if (Size == temp.Size)
+	{
+		Vector temp(Size);
+		for (int i = 0; i < Size; i++)
+		{
+			temp.vector[i] = vector[i] * temp.vector[i];
+		}
+		return temp;
+	}
+	else
+	{
+		cout << "size != temp.size" << endl;
+		return Vector();
+	}
+}
+
+template<class T>
+T& Vector<T>::operator[](int index)
+{
+	if (index < Size && index > -1)
+	{
+		return vector[index];
+	}
+	else
+	{
+		cout << "size != temp.size" << endl;
+		//return T();
+	}
+}
+
+
 
